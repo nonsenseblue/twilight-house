@@ -1,5 +1,5 @@
 // ===== 家具との会話判定 =====
-import { FURNITURE_LINES, TILE, COLS, ROWS } from './rooms'
+import { FURNITURE_LINES, TILE, COLS, ROWS } from '../common/rooms'
 
 export interface FurnitureHit {
   tile: number

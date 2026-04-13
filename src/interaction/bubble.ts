@@ -1,5 +1,5 @@
 // ===== 吹き出し管理 =====
-import { drawBubble } from './room-draw'
+import { drawBubble } from '../draw/room-draw'
 import type { Npc } from './npc'
 
 export type Bubble =

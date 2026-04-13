@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { ROOMS, TILE, COLS, ROWS, SCALE, NPC_LINES } from './rooms'
-import { drawRoom, drawPlayer, drawNpc, drawSelectMode, drawInteractHint, getMapHeaderRect, type DrawState, type Player } from './room-draw'
-import { TvController } from './tv'
+import { ROOMS, TILE, COLS, ROWS, SCALE, NPC_LINES } from './common/rooms'
+import { drawRoom, drawPlayer, drawNpc, drawSelectMode, drawInteractHint, getMapHeaderRect, type DrawState, type Player } from './draw/room-draw'
+import { TvController } from './game/tv'
 import { RoomCanvas, type RoomCanvasHandle } from './components/RoomCanvas'
 import { TvOverlay, type TvOverlayHandle } from './components/TvOverlay'
-import { initNpcs, findNearestNpc, type Npc } from './npc'
-import { findAdjacentFurniture } from './furniture'
-import { BubbleManager } from './bubble'
-import { getTimeOfDay, cycleTimeOfDay } from './time-of-day'
+import { initNpcs, findNearestNpc, type Npc } from './interaction/npc'
+import { findAdjacentFurniture } from './interaction/furniture'
+import { BubbleManager } from './interaction/bubble'
+import { getTimeOfDay, cycleTimeOfDay } from './common/time-of-day'
 
 type Mode = 'select' | 'room' | 'tv'
 
@@ -113,6 +113,9 @@ export function App() {
     playerRef.current.y = sy
     keysRef.current = {}
     roomCooldownRef.current = 30
+    const url = new URL(window.location.href)
+    url.searchParams.set('room', String(roomIdx))
+    window.history.replaceState(null, '', url)
   }
 
   function startGameLoop() {
@@ -231,7 +234,7 @@ export function App() {
             return
           }
 
-          if (roomCooldownRef.current <= 0 && curTile >= 9 && curTile <= 12) {
+          if (roomCooldownRef.current <= 0 && curTile >= 9 && curTile <= 14) {
             const doors = ROOMS[currentRoomRef.current].doors
             for (let di = 0; di < doors.length; di++) {
               if (doors[di].tile === curTile) {

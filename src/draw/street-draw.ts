@@ -1,241 +1,6 @@
 // ===== 商店街・店舗の描画 =====
-import { TILE } from './rooms'
-
-// ===== 花屋の中 =====
-export function drawFlowerShop(rc: CanvasRenderingContext2D): void {
-  // 床を薄緑タイルに
-  rc.fillStyle = 'rgba(200,240,200,0.12)'
-  rc.fillRect(TILE, 2 * TILE, TILE * 13, TILE * 8)
-
-  // 壁を薄緑に
-  rc.fillStyle = '#ddeedd'
-  rc.fillRect(TILE, TILE, TILE * 13, TILE)
-
-  // 花ヘルパー（大きめ）
-  const drawBigFlower = (fx: number, fy: number, color: string, size: number) => {
-    // 花びら
-    rc.fillStyle = color
-    rc.fillRect(fx, fy, size, size)
-    rc.fillRect(fx - 1, fy + 1, size + 2, size - 2)
-    rc.fillRect(fx + 1, fy - 1, size - 2, size + 2)
-    // 中心
-    rc.fillStyle = '#ffee55'
-    rc.fillRect(fx + Math.floor(size/2) - 1, fy + Math.floor(size/2) - 1, 2, 2)
-    // 茎
-    rc.fillStyle = '#338833'
-    rc.fillRect(fx + Math.floor(size/2), fy + size, 1, 6)
-    // 葉っぱ
-    rc.fillStyle = '#44aa44'
-    rc.fillRect(fx + Math.floor(size/2) + 1, fy + size + 2, 2, 2)
-  }
-
-  // --- 棚の上に花（row1、大きめで華やか）---
-  const shelfColors = ['#cc2244', '#ff6688', '#ffcc00', '#ff88cc', '#aa44ff', '#44ddaa', '#ffaa44', '#4488ff', '#ff4466', '#88ccff']
-  for (let i = 0; i < 10; i++) {
-    drawBigFlower(TILE + 8 + i * 20, TILE + 2, shelfColors[i], 5)
-  }
-
-  // --- 左右に大きな花瓶（row3）---
-  // 左の花瓶
-  rc.fillStyle = '#6688cc'
-  rc.fillRect(3 * TILE, 3 * TILE + 4, 12, 12)
-  rc.fillStyle = '#7799dd'
-  rc.fillRect(3 * TILE + 1, 3 * TILE + 5, 10, 10)
-  drawBigFlower(3 * TILE - 1, 2 * TILE + 10, '#ff4466', 6)
-  drawBigFlower(3 * TILE + 6, 2 * TILE + 8, '#ffaa44', 5)
-
-  // 右の花瓶
-  rc.fillStyle = '#cc88aa'
-  rc.fillRect(11 * TILE + 4, 3 * TILE + 4, 12, 12)
-  rc.fillStyle = '#dd99bb'
-  rc.fillRect(11 * TILE + 5, 3 * TILE + 5, 10, 10)
-  drawBigFlower(11 * TILE + 3, 2 * TILE + 10, '#aaccff', 6)
-  drawBigFlower(11 * TILE + 10, 2 * TILE + 8, '#44ddaa', 5)
-
-  // --- 花束ディスプレイ（row4、カウンター手前）---
-  const bouquetData = [
-    { x: 3, color: '#ff4466' },
-    { x: 5, color: '#ffcc00' },
-    { x: 9, color: '#aa44ff' },
-    { x: 11, color: '#44ddaa' },
-  ]
-  for (const b of bouquetData) {
-    const bx = b.x * TILE + 2, by = 4 * TILE + 2
-    // 包み紙
-    rc.fillStyle = '#f0e8d0'
-    rc.fillRect(bx, by + 5, 12, 8)
-    rc.fillStyle = '#e0d8c0'
-    rc.fillRect(bx + 1, by + 6, 10, 6)
-    // リボン
-    rc.fillStyle = '#cc6688'
-    rc.fillRect(bx + 4, by + 5, 4, 2)
-    // 花（大きめ）
-    drawBigFlower(bx + 2, by - 2, b.color, 5)
-  }
-
-  // --- カウンター上にレジ+花束（row5）---
-  // レジ
-  rc.fillStyle = '#ddd'
-  rc.fillRect(7 * TILE, 5 * TILE + 2, 14, 10)
-  rc.fillStyle = '#ccc'
-  rc.fillRect(7 * TILE + 1, 5 * TILE + 3, 12, 6)
-  rc.fillStyle = '#44aa44'
-  rc.fillRect(7 * TILE + 3, 5 * TILE + 5, 8, 3)
-
-  // --- 下半分に鉢植え（row7、左右に2つずつ）---
-  const potData = [
-    { x: 2, color: '#ff4444' },
-    { x: 4, color: '#ffaa00' },
-    { x: 10, color: '#44aaff' },
-    { x: 12, color: '#44dd44' },
-  ]
-  for (const p of potData) {
-    const ppx = p.x * TILE + 4, ppy = 7 * TILE + 2
-    rc.fillStyle = '#aa6633'
-    rc.fillRect(ppx, ppy + 6, 10, 8)
-    rc.fillStyle = '#bb7744'
-    rc.fillRect(ppx + 1, ppy + 7, 8, 6)
-    rc.fillStyle = '#996622'
-    rc.fillRect(ppx - 1, ppy + 6, 12, 2)
-    drawBigFlower(ppx + 2, ppy - 2, p.color, 5)
-  }
-}
-
-// ===== ラーメン屋の中 =====
-export function drawRamenShop(rc: CanvasRenderingContext2D): void {
-  // 壁を暖色に
-  rc.fillStyle = '#f0e0cc'
-  rc.fillRect(TILE, TILE, TILE * 13, TILE)
-
-  // 壁の中央にのれん
-  rc.fillStyle = '#fff'
-  for (let ni = 0; ni < 4; ni++) {
-    rc.fillRect(5 * TILE + 4 + ni * 12, 1 * TILE + 8, 10, 8)
-  }
-  rc.fillStyle = '#cc6633'
-  rc.font = '7px sans-serif'
-  rc.textAlign = 'center'
-  rc.fillText('ラーメン', 7 * TILE, 1 * TILE + 7)
-
-  // メニュー看板（壁左 col1-3）
-  rc.fillStyle = '#553322'
-  rc.fillRect(1 * TILE + 2, 1 * TILE + 1, TILE * 2 + 8, TILE)
-  rc.fillStyle = '#f0e8d0'
-  rc.fillRect(1 * TILE + 4, 1 * TILE + 3, TILE * 2 + 4, TILE - 4)
-  rc.fillStyle = '#333'
-  rc.font = '4px sans-serif'
-  rc.textAlign = 'left'
-  rc.fillText('しょうゆ 500', 1 * TILE + 5, 1 * TILE + 8)
-  rc.fillText('みそ   600', 1 * TILE + 5, 1 * TILE + 14)
-
-  // メニュー看板（壁右 col11-13）
-  rc.fillStyle = '#553322'
-  rc.fillRect(11 * TILE + 2, 1 * TILE + 1, TILE * 2 + 8, TILE)
-  rc.fillStyle = '#f0e8d0'
-  rc.fillRect(11 * TILE + 4, 1 * TILE + 3, TILE * 2 + 4, TILE - 4)
-  rc.fillStyle = '#333'
-  rc.fillText('しお   500', 11 * TILE + 5, 1 * TILE + 8)
-  rc.fillText('とんこつ 700', 11 * TILE + 5, 1 * TILE + 14)
-
-  // 壁の時計（中央右寄り）
-  rc.fillStyle = '#6a4a22'
-  rc.fillRect(10 * TILE - 1, 1 * TILE + 1, 10, 10)
-  rc.fillStyle = '#f0ead8'
-  rc.fillRect(10 * TILE, 1 * TILE + 2, 8, 8)
-  rc.fillStyle = '#333'
-  rc.fillRect(10 * TILE + 4, 1 * TILE + 3, 1, 3)
-  rc.fillRect(10 * TILE + 4, 1 * TILE + 6, 3, 1)
-
-  // カウンターの上に丼5つ（大きめ）
-  for (let i = 0; i < 5; i++) {
-    const dx = (3 + i * 2) * TILE
-    // 丼（大きめ）
-    rc.fillStyle = '#eee'
-    rc.fillRect(dx + 1, 3 * TILE + 2, 12, 8)
-    rc.fillStyle = '#cc3333'
-    rc.fillRect(dx + 1, 3 * TILE + 2, 12, 3)
-    // スープ
-    rc.fillStyle = '#c8a060'
-    rc.fillRect(dx + 2, 3 * TILE + 4, 10, 4)
-    // 麺
-    rc.fillStyle = '#eedd88'
-    rc.fillRect(dx + 3, 3 * TILE + 4, 4, 3)
-    // チャーシュー
-    rc.fillStyle = '#aa6644'
-    rc.fillRect(dx + 8, 3 * TILE + 5, 3, 2)
-    // 湯気
-    rc.fillStyle = 'rgba(255,255,255,0.3)'
-    rc.fillRect(dx + 4, 3 * TILE, 1, 2)
-    rc.fillRect(dx + 8, 3 * TILE - 1, 1, 3)
-  }
-
-  // 箸（カウンター上）
-  for (let i = 0; i < 5; i++) {
-    const dx = (3 + i * 2) * TILE
-    rc.fillStyle = '#8a6a40'
-    rc.fillRect(dx + 13, 3 * TILE + 4, 1, 6)
-    rc.fillRect(dx + 14, 3 * TILE + 4, 1, 6)
-  }
-
-  // 調味料セット（丼と丼の間に3セット）
-  const seasoningX = [4 * TILE + 6, 8 * TILE + 2, 10 * TILE + 6]
-  for (const sx of seasoningX) {
-    // 醤油
-    rc.fillStyle = '#332211'
-    rc.fillRect(sx, 3 * TILE + 2, 2, 6)
-    rc.fillStyle = '#cc2222'
-    rc.fillRect(sx, 3 * TILE + 1, 2, 2)
-    // 酢
-    rc.fillStyle = '#ddcc88'
-    rc.fillRect(sx + 3, 3 * TILE + 3, 2, 5)
-    // ラー油
-    rc.fillStyle = '#cc4422'
-    rc.fillRect(sx + 6, 3 * TILE + 3, 2, 5)
-    rc.fillStyle = '#aa3311'
-    rc.fillRect(sx + 6, 3 * TILE + 2, 2, 2)
-  }
-
-  // 調味料（左テーブル上）
-  rc.fillStyle = '#332211'
-  rc.fillRect(4 * TILE + 4, 6 * TILE + 3, 2, 5)
-  rc.fillStyle = '#cc2222'
-  rc.fillRect(4 * TILE + 4, 6 * TILE + 2, 2, 2)
-  rc.fillStyle = '#ddcc88'
-  rc.fillRect(4 * TILE + 7, 6 * TILE + 3, 2, 5)
-
-  // 調味料（右テーブル上）
-  rc.fillStyle = '#332211'
-  rc.fillRect(11 * TILE + 4, 6 * TILE + 3, 2, 5)
-  rc.fillStyle = '#cc2222'
-  rc.fillRect(11 * TILE + 4, 6 * TILE + 2, 2, 2)
-  rc.fillStyle = '#cc4422'
-  rc.fillRect(11 * TILE + 7, 6 * TILE + 3, 2, 5)
-  rc.fillStyle = '#aa3311'
-  rc.fillRect(11 * TILE + 7, 6 * TILE + 2, 2, 2)
-
-  // テーブル席（row6、タイルで配置済み）
-  // 左テーブルの上に湯呑
-  rc.fillStyle = 'rgba(200,220,255,0.6)'
-  rc.fillRect(3 * TILE + 4, 6 * TILE + 3, 4, 5)
-  rc.fillStyle = 'rgba(180,200,240,0.4)'
-  rc.fillRect(3 * TILE + 5, 6 * TILE + 4, 2, 3)
-
-  // 右テーブルの上に湯呑
-  rc.fillStyle = 'rgba(200,220,255,0.6)'
-  rc.fillRect(10 * TILE + 4, 6 * TILE + 3, 4, 5)
-  rc.fillStyle = 'rgba(180,200,240,0.4)'
-  rc.fillRect(10 * TILE + 5, 6 * TILE + 4, 2, 3)
-
-  // 壁のポスター（ラーメン写真っぽい）
-  rc.fillStyle = '#ffcc88'
-  rc.fillRect(9 * TILE, 1 * TILE + 2, 8, 8)
-  rc.fillStyle = '#cc9955'
-  rc.fillRect(9 * TILE + 1, 1 * TILE + 3, 6, 6)
-
-  // 暖かい光
-  rc.fillStyle = 'rgba(255,200,100,0.05)'
-  rc.fillRect(TILE, TILE * 2, TILE * 13, TILE * 8)
-}
+import { TILE } from '../common/rooms'
+import type { TimeOfDay } from '../common/time-of-day'
 
 // ===== 各店舗の個別外観描画 =====
 
@@ -379,7 +144,7 @@ function drawShopDagashi(rc: CanvasRenderingContext2D, cx: number, w: number) {
   rc.fillStyle = '#ffee88'
   rc.font = '7px sans-serif'
   rc.textAlign = 'center'
-  rc.fillText('だがし', cx + w / 2, sy + 10)
+  rc.fillText('おもちゃ', cx + w / 2, sy + 10)
   // 吊り看板の紐
   rc.fillStyle = '#886'
   rc.fillRect(cx + (w - 38) / 2 + 2, sy - 1, 1, 3)
@@ -536,7 +301,7 @@ function drawShopKoban(rc: CanvasRenderingContext2D, cx: number, w: number) {
 }
 
 // 商店街・手前（たいやき屋・花屋・駄菓子屋）
-export function drawStreetFront(rc: CanvasRenderingContext2D): void {
+export function drawStreetFront(rc: CanvasRenderingContext2D, tod: TimeOfDay = 'noon'): void {
   drawShopTaiyaki(rc, 1 * TILE, TILE * 4)
   // たいやき屋: 日よけテント（赤白ストライプ）
   for (let si = 0; si < 8; si++) {
@@ -595,43 +360,28 @@ export function drawStreetFront(rc: CanvasRenderingContext2D): void {
     rc.fillRect(fb.x + 5, shopY + 1, 4, 4)
   }
 
-  // 駄菓子屋: 棚+お菓子（それぞれ違う形）
+  // おもちゃ屋: 棚+おもちゃ（ドアの左側のみ）
   rc.fillStyle = '#8a6a40'
-  rc.fillRect(9 * TILE + 2, shopY + 2, TILE * 3 + 4, 12)
+  rc.fillRect(9 * TILE + 2, shopY + 2, TILE * 2 - 2, 12)
   rc.fillStyle = '#9a7a50'
-  rc.fillRect(9 * TILE + 3, shopY + 3, TILE * 3 + 2, 10)
+  rc.fillRect(9 * TILE + 3, shopY + 3, TILE * 2 - 4, 10)
   const dx = 9 * TILE + 4, dy = shopY + 4
-  // うまい棒（赤い筒）
-  rc.fillStyle = '#ff4444'
-  rc.fillRect(dx, dy + 1, 3, 6)
-  rc.fillStyle = '#cc2222'
-  rc.fillRect(dx, dy, 3, 1)
-  // ラムネ瓶（青）
-  rc.fillStyle = '#44aaff'
-  rc.fillRect(dx + 8, dy + 2, 4, 5)
-  rc.fillRect(dx + 9, dy, 2, 3)
-  rc.fillStyle = '#88ccff'
-  rc.fillRect(dx + 9, dy + 3, 2, 2)
-  // ガム（緑の丸）
-  rc.fillStyle = '#44dd44'
+  // ロボット（赤）
+  rc.fillStyle = '#dd3333'
+  rc.fillRect(dx, dy + 1, 4, 6)
+  rc.fillStyle = '#ffcc44'
+  rc.fillRect(dx + 1, dy + 2, 2, 2)
+  // ぬいぐるみ（ピンク）
+  rc.fillStyle = '#ffaacc'
+  rc.fillRect(dx + 8, dy, 5, 6)
+  rc.fillRect(dx + 9, dy - 1, 3, 8)
+  rc.fillStyle = '#222'
+  rc.fillRect(dx + 9, dy + 2, 1, 1)
+  rc.fillRect(dx + 11, dy + 2, 1, 1)
+  // ボール（黄）
+  rc.fillStyle = '#ffcc00'
   rc.fillRect(dx + 17, dy + 1, 4, 4)
   rc.fillRect(dx + 18, dy, 2, 6)
-  rc.fillStyle = '#33cc33'
-  rc.fillRect(dx + 18, dy + 2, 2, 2)
-  // あめ玉（オレンジ）
-  rc.fillStyle = '#ffaa00'
-  rc.fillRect(dx + 25, dy + 1, 4, 4)
-  rc.fillRect(dx + 26, dy, 2, 6)
-  rc.fillStyle = '#fff'
-  rc.fillRect(dx + 26, dy + 2, 1, 1)
-  // チョコ（ピンクの包み）
-  rc.fillStyle = '#ff88cc'
-  rc.fillRect(dx + 33, dy + 1, 5, 4)
-  rc.fillStyle = '#ffaadd'
-  rc.fillRect(dx + 34, dy + 2, 3, 2)
-  rc.fillStyle = '#cc66aa'
-  rc.fillRect(dx + 33, dy + 1, 1, 4)
-  rc.fillRect(dx + 37, dy + 1, 1, 4)
 
   // --- 下側の歩道に自販機（col3-4 row7）---
   const vmx = 3 * TILE, vmy = 7 * TILE
@@ -683,15 +433,23 @@ export function drawStreetFront(rc: CanvasRenderingContext2D): void {
   }
 
   // 街灯2つ（col2, col9）
+  const isNight1 = tod === 'night' || tod === 'evening'
   for (const lCol of [2, 9]) {
     const slx = lCol * TILE + 7, sly = 7 * TILE
     rc.fillStyle = '#888'
     rc.fillRect(slx, sly + 2, 2, 14)
-    rc.fillStyle = '#ffcc44'
+    rc.fillStyle = isNight1 ? '#ffee66' : '#ffcc44'
     rc.fillRect(slx - 2, sly + 2, 6, 3)
     // 光
-    rc.fillStyle = 'rgba(255,220,100,0.06)'
-    rc.fillRect(slx - 8, sly, 20, 16)
+    if (isNight1) {
+      rc.fillStyle = 'rgba(255,220,100,0.25)'
+      rc.fillRect(slx - 16, sly - 8, 36, 32)
+      rc.fillStyle = 'rgba(255,220,100,0.15)'
+      rc.fillRect(slx - 10, sly - 4, 24, 24)
+    } else {
+      rc.fillStyle = 'rgba(255,220,100,0.06)'
+      rc.fillRect(slx - 8, sly, 20, 16)
+    }
   }
 
   // --- 森（row9-11）---
@@ -720,10 +478,25 @@ export function drawStreetFront(rc: CanvasRenderingContext2D): void {
   for (let gx = TILE + 4; gx < 14 * TILE; gx += 6) {
     rc.fillRect(gx, 9 * TILE + 2, 2, 3)
   }
+
+  // 夜の看板の光
+  if (isNight1) {
+    const shops = [
+      { x: 1 * TILE, w: TILE * 4 },   // たいやき屋
+      { x: 5 * TILE, w: TILE * 4 },   // 花屋
+      { x: 9 * TILE, w: TILE * 4 },   // 駄菓子屋
+    ]
+    for (const shop of shops) {
+      rc.fillStyle = 'rgba(255,230,150,0.2)'
+      rc.fillRect(shop.x, 1 * TILE, shop.w, TILE * 2)
+      rc.fillStyle = 'rgba(255,220,100,0.12)'
+      rc.fillRect(shop.x - 4, 3 * TILE - 2, shop.w + 8, TILE + 4)
+    }
+  }
 }
 
 // 商店街・奥（ラーメン屋・レコード屋・交番）
-export function drawStreetBack(rc: CanvasRenderingContext2D): void {
+export function drawStreetBack(rc: CanvasRenderingContext2D, tod: TimeOfDay = 'noon'): void {
   drawShopRamen(rc, 1 * TILE, TILE * 4)
   // ラーメン屋: 提灯2つ（看板の両側、屋根の縁から吊り下げ）
   const signLeft = 1 * TILE + (TILE * 4 - 30) / 2  // 看板左端
@@ -796,14 +569,22 @@ export function drawStreetBack(rc: CanvasRenderingContext2D): void {
   }
 
   // 街灯2つ（col2, col9）
+  const isNight2 = tod === 'night' || tod === 'evening'
   for (const lCol of [2, 9]) {
     const slx2 = lCol * TILE + 7, sly2 = 7 * TILE
     rc.fillStyle = '#888'
     rc.fillRect(slx2, sly2 + 2, 2, 14)
-    rc.fillStyle = '#ffcc44'
+    rc.fillStyle = isNight2 ? '#ffee66' : '#ffcc44'
     rc.fillRect(slx2 - 2, sly2 + 2, 6, 3)
-    rc.fillStyle = 'rgba(255,220,100,0.06)'
-    rc.fillRect(slx2 - 8, sly2, 20, 16)
+    if (isNight2) {
+      rc.fillStyle = 'rgba(255,220,100,0.25)'
+      rc.fillRect(slx2 - 16, sly2 - 8, 36, 32)
+      rc.fillStyle = 'rgba(255,220,100,0.15)'
+      rc.fillRect(slx2 - 10, sly2 - 4, 24, 24)
+    } else {
+      rc.fillStyle = 'rgba(255,220,100,0.06)'
+      rc.fillRect(slx2 - 8, sly2, 20, 16)
+    }
   }
 
   // ポスト（col12 row8）
@@ -836,5 +617,20 @@ export function drawStreetBack(rc: CanvasRenderingContext2D): void {
   rc.fillStyle = '#44aa44'
   for (let gx = TILE + 4; gx < 14 * TILE; gx += 6) {
     rc.fillRect(gx, 9 * TILE + 2, 2, 3)
+  }
+
+  // 夜の看板の光
+  if (isNight2) {
+    const shops = [
+      { x: 1 * TILE, w: TILE * 4 },          // ラーメン屋
+      { x: 5 * TILE, w: TILE * 5 },          // レコード屋
+      { x: 10 * TILE, w: TILE * 3 + 8 },     // 交番
+    ]
+    for (const shop of shops) {
+      rc.fillStyle = 'rgba(255,230,150,0.2)'
+      rc.fillRect(shop.x, 1 * TILE, shop.w, TILE * 2)
+      rc.fillStyle = 'rgba(255,220,100,0.12)'
+      rc.fillRect(shop.x - 4, 3 * TILE - 2, shop.w + 8, TILE + 4)
+    }
   }
 }

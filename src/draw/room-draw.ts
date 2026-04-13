@@ -1,7 +1,8 @@
 // ===== ROOM DRAWING FUNCTIONS =====
-import { ROOMS, ROOM_CHARS, COLORS, TILE, COLS, ROWS, SCALE, selectChars } from './rooms'
-import { type TimeOfDay, getOverlay, getWindowColor, getWindowGlow } from './time-of-day'
-import { drawStreetFront, drawStreetBack, drawFlowerShop, drawRamenShop } from './street-draw'
+import { ROOMS, ROOM_CHARS, COLORS, TILE, COLS, ROWS, SCALE, selectChars } from '../common/rooms'
+import { type TimeOfDay, getOverlay, getWindowColor, getWindowGlow } from '../common/time-of-day'
+import { drawStreetFront, drawStreetBack } from './street-draw'
+import { drawFlowerShop, drawRamenShop, drawToyShop, drawKoban } from './shops'
 
 export interface Player {
   x: number
@@ -186,8 +187,8 @@ export function drawRoom(s: DrawState): void {
         rc.fillRect(px + 3, py + 5, 10, 2)
         rc.fillStyle = 'rgba(255,240,200,0.15)'
         rc.fillRect(px - 2, py - 2, TILE + 4, TILE + 4)
-      } else if (t >= 9 && t <= 12) {
-        const flr = rtype === 'tatami' ? COLORS.floor1 : rtype === 'engawa' ? '#c0a070' : '#b09070'
+      } else if (t >= 9 && t <= 14) {
+        const flr = rtype === 'tatami' ? COLORS.floor1 : rtype === 'engawa' ? '#c0a070' : rtype === 'street' ? '#aaa' : '#b09070'
         rc.fillStyle = flr
         rc.fillRect(px, py, TILE, TILE)
         if (currentRoom === 0 && t === 12) {
@@ -210,6 +211,8 @@ export function drawRoom(s: DrawState): void {
           rc.fillStyle = '#ddc'
           if (t===9) { rc.fillRect(px+9,py+6,4,4); rc.fillRect(px+7,py+7,3,2) }
           if (t===10) { rc.fillRect(px+3,py+6,4,4); rc.fillRect(px+6,py+7,3,2) }
+          if (t===13) { rc.fillRect(px+6,py+3,4,4); rc.fillRect(px+7,py+6,2,3) }
+          if (t===14) { rc.fillRect(px+6,py+3,4,4); rc.fillRect(px+7,py+6,2,3) }
           if (t===11) { rc.fillRect(px+6,py+9,4,4); rc.fillRect(px+7,py+7,2,3) }
           if (t===12) { rc.fillRect(px+6,py+3,4,4); rc.fillRect(px+7,py+6,2,3) }
         }
@@ -1119,12 +1122,10 @@ export function drawRoom(s: DrawState): void {
     const flowers = [
       { x: 3, y: 3, c1: '#ff6688', c2: '#ffaa44' },
       { x: 4, y: 2, c1: '#ff88aa', c2: '#ffcc66' },
-      { x: 6, y: 1, c1: '#ffdd44', c2: '#ff8844' },
-      { x: 7, y: 3, c1: '#ff5577', c2: '#ffaa33' },
+      { x: 5, y: 1, c1: '#ffdd44', c2: '#ff8844' },
       { x: 9, y: 1, c1: '#aa66ff', c2: '#ffee55' },
       { x: 9, y: 3, c1: '#ff88cc', c2: '#ffcc44' },
       { x: 4, y: 4, c1: '#ff6688', c2: '#ffaa44' },
-      { x: 6, y: 4, c1: '#ffdd44', c2: '#ff8844' },
       { x: 10, y: 4, c1: '#ff88aa', c2: '#ffcc66' },
       { x: 12, y: 3, c1: '#aa66ff', c2: '#ffee55' },
     ]
@@ -1248,10 +1249,12 @@ export function drawRoom(s: DrawState): void {
   }
 
   // ===== 商店街デコレーション（street-draw.ts） =====
-  if (currentRoom === 5) drawStreetFront(rc)
-  if (currentRoom === 6) drawStreetBack(rc)
+  if (currentRoom === 5) drawStreetFront(rc, s.timeOfDay)
+  if (currentRoom === 6) drawStreetBack(rc, s.timeOfDay)
   if (currentRoom === 7) drawFlowerShop(rc)
   if (currentRoom === 8) drawRamenShop(rc)
+  if (currentRoom === 9) drawToyShop(rc)
+  if (currentRoom === 10) drawKoban(rc)
 
   // ===== 時間帯オーバーレイ =====
   const ovl = getOverlay(s.timeOfDay)
@@ -1353,7 +1356,7 @@ export function drawRoom(s: DrawState): void {
     const ptx = Math.floor(player.x / TILE)
     const pty = Math.floor(player.y / TILE)
     const curTile = getTile(s.room, ptx, pty)
-    if (curTile >= 9 && curTile <= 12) {
+    if (curTile >= 9 && curTile <= 14) {
       const doors = ROOMS[currentRoom].doors
       let destName = ''
       for (let di = 0; di < doors.length; di++) {

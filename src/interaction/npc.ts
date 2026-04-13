@@ -1,6 +1,6 @@
 // ===== NPC ロジック =====
-import { NPC_HOME_ROOM, NPC_HOME_POS, ROOM_CHARS } from './rooms'
-import type { Player } from './room-draw'
+import { NPC_HOME_ROOM, NPC_HOME_POS, ROOM_CHARS } from '../common/rooms'
+import type { Player } from '../draw/room-draw'
 
 export interface Npc extends Player {
   roomIdx: number
