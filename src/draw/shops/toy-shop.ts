@@ -120,20 +120,20 @@ export function drawToyShop(rc: CanvasRenderingContext2D): void {
 
   // 右: おもちゃの棚
   rc.fillStyle = '#8a6a40'
-  rc.fillRect(11 * TILE, 5 * TILE + 1, TILE * 2 + 4, 12)
+  rc.fillRect(11 * TILE, 5 * TILE + 1, TILE * 2 - 2, 12)
   rc.fillStyle = '#9a7a50'
-  rc.fillRect(11 * TILE + 1, 5 * TILE + 2, TILE * 2 + 2, 10)
+  rc.fillRect(11 * TILE + 1, 5 * TILE + 2, TILE * 2 - 4, 10)
   // プラレール
   rc.fillStyle = '#3366cc'
   rc.fillRect(11 * TILE + 2, 5 * TILE + 3, 8, 3)
   rc.fillStyle = '#333'
   rc.fillRect(11 * TILE + 2, 5 * TILE + 6, 2, 2)
   rc.fillRect(11 * TILE + 6, 5 * TILE + 6, 2, 2)
-  // カードの束
+  // カードの束（プラレールの右隣）
   rc.fillStyle = '#ffee44'
-  rc.fillRect(11 * TILE + 14, 5 * TILE + 3, 6, 8)
+  rc.fillRect(11 * TILE + 14, 5 * TILE + 3, 5, 8)
   rc.fillStyle = '#ff8844'
-  rc.fillRect(11 * TILE + 15, 5 * TILE + 4, 4, 6)
+  rc.fillRect(11 * TILE + 15, 5 * TILE + 4, 3, 6)
 
   // --- 床のおもちゃ散らばり ---
   // ミニカー（red, row7 左）
@@ -168,12 +168,12 @@ export function drawToyShop(rc: CanvasRenderingContext2D): void {
   rc.fillStyle = '#6a4422'
   rc.fillRect(3 * TILE + 6, 8 * TILE + 9, 1, 3)
 
-  // 風船（row4 中央）
+  // 風船（row4 左寄り）
   rc.fillStyle = '#ff4466'
-  rc.fillRect(7 * TILE + 2, 4 * TILE, 5, 6)
-  rc.fillRect(7 * TILE + 3, 3 * TILE + 14, 3, 8)
+  rc.fillRect(4 * TILE + 2, 4 * TILE, 5, 6)
+  rc.fillRect(4 * TILE + 3, 3 * TILE + 14, 3, 8)
   rc.fillStyle = '#886'
-  rc.fillRect(7 * TILE + 4, 4 * TILE + 6, 1, 6)
+  rc.fillRect(4 * TILE + 4, 4 * TILE + 6, 1, 6)
 
   // 暖かい光
   rc.fillStyle = 'rgba(255,230,150,0.05)'
