@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+// import { signOut } from 'firebase/auth'
+// import { auth } from './firebase'
 import { ROOMS, TILE, COLS, ROWS, SCALE, NPC_LINES } from './common/rooms'
 import { drawRoom, drawPlayer, drawNpc, drawSelectMode, drawInteractHint, getMapHeaderRect, type DrawState, type Player } from './draw/room-draw'
 import { TvController } from './game/tv'
@@ -8,12 +10,17 @@ import { initNpcs, findNearestNpc, type Npc } from './interaction/npc'
 import { findAdjacentFurniture } from './interaction/furniture'
 import { BubbleManager } from './interaction/bubble'
 import { getTimeOfDay, cycleTimeOfDay } from './common/time-of-day'
+// import { ChatPanel } from './chat/ChatPanel'
+// import { useChat } from './chat/useChat'
+// import { usePresence } from './chat/usePresence'
 
 type Mode = 'select' | 'room' | 'tv'
 
 const RW = 480, RH = 384
 
 export function App() {
+  // const { messages, sendMessage } = useChat()
+  // const { onlineUsers } = usePresence()
   const [mode, setMode] = useState<Mode>('select')
   const modeRef = useRef<Mode>('select')
   const roomCanvasRef = useRef<RoomCanvasHandle>(null)
@@ -103,7 +110,7 @@ export function App() {
 
   function isSolid(tx: number, ty: number): boolean {
     const t = getTile(tx, ty)
-    return t===1||t===2||t===3||t===5||t===6||t===8||t===21||t===22||t===25||t===26||t===27||t===29||t===30||t===31
+    return t===1||t===2||t===3||t===5||t===6||t===8||t===21||t===22||t===25||t===26||t===27||t===29||t===30||t===31||t===51||t===54
   }
 
   function changeRoom(roomIdx: number, sx: number, sy: number) {
@@ -192,6 +199,7 @@ export function App() {
   // Input handler
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement).tagName === 'INPUT') return
       if (e.repeat) return
       keysRef.current[e.key] = true
       const tv = tvRef.current
@@ -306,8 +314,20 @@ export function App() {
 
   return (
     <>
-      <RoomCanvas ref={roomCanvasRef} onCanvasClick={handleCanvasClick} />
-      <TvOverlay ref={tvOverlayRef} active={mode === 'tv'} />
+      <div className="game-area">
+        <RoomCanvas ref={roomCanvasRef} onCanvasClick={handleCanvasClick} />
+        <TvOverlay ref={tvOverlayRef} active={mode === 'tv'} />
+      </div>
+      {/* 認証を有効にする時に戻す
+      <button className="logout-btn" onClick={() => signOut(auth)}>
+        ログアウト
+      </button>
+      <ChatPanel
+        messages={messages}
+        onlineUsers={onlineUsers}
+        onSend={sendMessage}
+      />
+      */}
     </>
   )
 }

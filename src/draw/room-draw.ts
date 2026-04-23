@@ -45,7 +45,7 @@ function getTile(room: number[], tx: number, ty: number): number {
 export function drawRoom(s: DrawState): void {
   const { rc, currentRoom, player, RW, RH } = s
   const rtype = ROOMS[currentRoom].type
-  rc.fillStyle = rtype === 'tatami' ? COLORS.floor1 : rtype === 'engawa' ? '#c0a070' : rtype === 'bath' ? '#d0e0e8' : rtype === 'street' ? '#555555' : '#b09070'
+  rc.fillStyle = rtype === 'tatami' ? COLORS.floor1 : rtype === 'engawa' ? '#c0a070' : rtype === 'bath' ? '#d0e0e8' : rtype === 'street' ? '#555555' : rtype === 'beach' ? '#e8d8a0' : rtype === 'mountain' ? '#5a9a40' : '#b09070'
   rc.fillRect(0, 0, RW/SCALE, RH/SCALE)
 
   // Draw tiles
@@ -472,6 +472,122 @@ export function drawRoom(s: DrawState): void {
         rc.fillRect(px + offset, py + 4, 8, 1)
         rc.fillRect(px + offset, py + 12, 8, 1)
         rc.fillRect(px + offset + 8, py, 1, TILE)
+      } else if (t === 50) {
+        // 砂浜
+        rc.fillStyle = '#e8d8a0'
+        rc.fillRect(px, py, TILE, TILE)
+        // 砂のテクスチャ
+        rc.fillStyle = '#dcc890'
+        if ((tx + ty) % 2 === 0) {
+          rc.fillRect(px + 2, py + 3, 1, 1)
+          rc.fillRect(px + 9, py + 7, 1, 1)
+          rc.fillRect(px + 5, py + 12, 1, 1)
+        } else {
+          rc.fillRect(px + 6, py + 2, 1, 1)
+          rc.fillRect(px + 12, py + 9, 1, 1)
+          rc.fillRect(px + 3, py + 11, 1, 1)
+        }
+        rc.fillStyle = '#d4c488'
+        rc.fillRect(px + 7, py + 5, 1, 1)
+        rc.fillRect(px + 13, py + 13, 1, 1)
+      } else if (t === 51) {
+        // 海（深い）— 行ごとに色を変えてグラデーション
+        const depthRatio = ty / ROWS
+        const r = Math.floor(20 + depthRatio * 15)
+        const g = Math.floor(60 + depthRatio * 30)
+        const b = Math.floor(140 + depthRatio * 30)
+        rc.fillStyle = `rgb(${r},${g},${b})`
+        rc.fillRect(px, py, TILE, TILE)
+
+        // 波（横に流れる白い筋、時間で動く）
+        const now = Date.now()
+        const w1 = Math.floor(Math.sin(now * 0.0012 + tx * 0.9 + ty * 0.3) * 3)
+        const w2 = Math.floor(Math.sin(now * 0.0008 + tx * 0.7 + ty * 0.5 + 2) * 3)
+
+        // 波頭（太い白線）
+        rc.fillStyle = 'rgba(255,255,255,0.18)'
+        rc.fillRect(px, py + 4 + w1, TILE, 2)
+        rc.fillStyle = 'rgba(255,255,255,0.10)'
+        rc.fillRect(px, py + 11 + w2, TILE, 2)
+
+        // きらめき
+        rc.fillStyle = 'rgba(255,255,255,0.2)'
+        if ((tx + ty) % 3 === 0) {
+          const sparkle = Math.sin(now * 0.003 + tx * 2) > 0.6
+          if (sparkle) rc.fillRect(px + 6, py + 3 + w1, 2, 1)
+        }
+        if ((tx + ty) % 5 === 1) {
+          const sparkle2 = Math.sin(now * 0.004 + tx * 3) > 0.5
+          if (sparkle2) rc.fillRect(px + 10, py + 9 + w2, 2, 1)
+        }
+
+        // 濃い波の影
+        rc.fillStyle = 'rgba(0,0,40,0.08)'
+        rc.fillRect(px, py + 6 + w1, TILE, 1)
+        rc.fillRect(px + 2, py + 13 + w2, TILE - 2, 1)
+      } else if (t === 52) {
+        // 浅瀬
+        const now = Date.now()
+        rc.fillStyle = '#70c0d0'
+        rc.fillRect(px, py, TILE, TILE)
+        const waveX = Math.floor(Math.sin(now * 0.001 + tx * 0.8) * 4)
+        rc.fillStyle = 'rgba(255,255,255,0.4)'
+        rc.fillRect(px, py + 8 + waveX, TILE, 3)
+        rc.fillStyle = 'rgba(255,255,255,0.6)'
+        rc.fillRect(px, py + 10 + waveX, TILE, 2)
+        rc.fillStyle = 'rgba(0,40,80,0.1)'
+        rc.fillRect(px, py, TILE, 6)
+      } else if (t === 53) {
+        // 山の草地
+        rc.fillStyle = '#5a9a40'
+        rc.fillRect(px, py, TILE, TILE)
+        rc.fillStyle = '#4a8a30'
+        rc.fillRect(px, py, TILE, 1)
+        // 草のテクスチャ
+        rc.fillStyle = '#6aaa50'
+        if ((tx + ty) % 2 === 0) {
+          rc.fillRect(px + 3, py + 4, 1, 2)
+          rc.fillRect(px + 10, py + 9, 1, 2)
+        } else {
+          rc.fillRect(px + 7, py + 3, 1, 2)
+          rc.fillRect(px + 13, py + 11, 1, 2)
+        }
+        // 小さい花（まばら）
+        if ((tx * 7 + ty * 3) % 11 === 0) {
+          rc.fillStyle = '#ffdd44'
+          rc.fillRect(px + 5, py + 6, 2, 2)
+        }
+        if ((tx * 5 + ty * 7) % 13 === 0) {
+          rc.fillStyle = '#ff88aa'
+          rc.fillRect(px + 11, py + 3, 2, 2)
+        }
+      } else if (t === 54) {
+        // 岩
+        rc.fillStyle = '#5a9a40'
+        rc.fillRect(px, py, TILE, TILE)
+        rc.fillStyle = '#888'
+        rc.fillRect(px + 2, py + 2, 12, 10)
+        rc.fillRect(px + 1, py + 4, 14, 6)
+        rc.fillStyle = '#999'
+        rc.fillRect(px + 3, py + 3, 10, 6)
+        rc.fillStyle = '#777'
+        rc.fillRect(px + 2, py + 10, 12, 2)
+        // ハイライト
+        rc.fillStyle = '#aaa'
+        rc.fillRect(px + 4, py + 3, 4, 2)
+      } else if (t === 55) {
+        // 山道（土の道）
+        rc.fillStyle = '#b89860'
+        rc.fillRect(px, py, TILE, TILE)
+        rc.fillStyle = '#a88850'
+        rc.fillRect(px, py, TILE, 1)
+        // 砂利
+        rc.fillStyle = '#c8a870'
+        if ((tx + ty) % 2 === 0) rc.fillRect(px + 4, py + 5, 1, 1)
+        if ((tx + ty) % 3 === 0) rc.fillRect(px + 10, py + 10, 1, 1)
+        rc.fillStyle = '#a08040'
+        rc.fillRect(px + 7, py + 3, 1, 1)
+        rc.fillRect(px + 12, py + 8, 1, 1)
       }
     }
   }
@@ -1256,6 +1372,218 @@ export function drawRoom(s: DrawState): void {
   if (currentRoom === 9) drawToyShop(rc)
   if (currentRoom === 10) drawKoban(rc)
 
+  // ===== 公園デコレーション =====
+  if (currentRoom === 11) {
+    const now = Date.now()
+
+    // === 木（外周の草地、道にかぶらない）===
+    const trees = [
+      { x: 0 * TILE, y: 0 * TILE },
+      { x: 14 * TILE, y: 0 * TILE },
+      { x: 0 * TILE, y: 7 * TILE },
+      { x: 14 * TILE, y: 7 * TILE },
+      { x: 0 * TILE, y: 3 * TILE },
+      { x: 14 * TILE, y: 5 * TILE },
+    ]
+    for (const tr of trees) {
+      rc.fillStyle = '#6a4422'
+      rc.fillRect(tr.x + 6, tr.y + 10, 4, 12)
+      rc.fillStyle = '#7a5432'
+      rc.fillRect(tr.x + 7, tr.y + 10, 2, 12)
+      rc.fillStyle = '#338833'
+      rc.fillRect(tr.x + 1, tr.y + 2, 14, 10)
+      rc.fillRect(tr.x + 3, tr.y, 10, 14)
+      rc.fillStyle = '#44aa44'
+      rc.fillRect(tr.x + 3, tr.y + 2, 10, 8)
+      rc.fillStyle = '#55bb55'
+      rc.fillRect(tr.x + 5, tr.y + 3, 5, 4)
+    }
+
+    // === 噴水（中央 col6-8, row5-6）===
+    rc.fillStyle = '#bbb'
+    rc.fillRect(6 * TILE + 4, 5 * TILE + 4, 32, 18)
+    rc.fillStyle = '#ccc'
+    rc.fillRect(6 * TILE + 6, 5 * TILE + 6, 28, 14)
+    rc.fillStyle = '#ddd'
+    rc.fillRect(6 * TILE + 2, 5 * TILE + 20, 36, 3)
+    // 水面
+    rc.fillStyle = '#80c8e0'
+    rc.fillRect(6 * TILE + 8, 5 * TILE + 8, 24, 10)
+    rc.fillStyle = 'rgba(255,255,255,0.3)'
+    rc.fillRect(6 * TILE + 12, 5 * TILE + 10, 4, 1)
+    rc.fillRect(6 * TILE + 22, 5 * TILE + 14, 6, 1)
+    // 中央柱
+    rc.fillStyle = '#aaa'
+    rc.fillRect(7 * TILE + 6, 5 * TILE + 10, 4, 8)
+    rc.fillStyle = '#bbb'
+    rc.fillRect(7 * TILE + 5, 5 * TILE + 9, 6, 3)
+    // 水しぶき
+    const sp = Math.sin(now * 0.003) * 2
+    rc.fillStyle = 'rgba(128,210,240,0.6)'
+    rc.fillRect(7 * TILE + 7, 5 * TILE + 4 + sp, 2, 5)
+    rc.fillStyle = 'rgba(128,210,240,0.4)'
+    rc.fillRect(7 * TILE + 4, 5 * TILE + 7 + sp, 3, 2)
+    rc.fillRect(7 * TILE + 9, 5 * TILE + 7 + sp, 3, 2)
+
+    // === ベンチ2つ（草地エリア内、道から離す）===
+    for (const bn of [
+      { x: 2 * TILE + 2, y: 5 * TILE + 6 },
+      { x: 11 * TILE + 2, y: 6 * TILE + 2 },
+    ]) {
+      rc.fillStyle = '#7a5a30'
+      rc.fillRect(bn.x, bn.y - 4, 14, 4)
+      rc.fillStyle = '#8a6a40'
+      rc.fillRect(bn.x + 1, bn.y - 3, 12, 1)
+      rc.fillRect(bn.x + 1, bn.y - 1, 12, 1)
+      rc.fillStyle = '#8a6a40'
+      rc.fillRect(bn.x, bn.y, 14, 3)
+      rc.fillStyle = '#7a5a30'
+      rc.fillRect(bn.x, bn.y, 14, 1)
+      rc.fillStyle = '#555'
+      rc.fillRect(bn.x + 1, bn.y + 3, 2, 4)
+      rc.fillRect(bn.x + 11, bn.y + 3, 2, 4)
+    }
+
+    // === すべり台（左上草地 col2-3, row2-3）===
+    {
+      const sx = 2 * TILE, sy = 2 * TILE
+      // 台（上の平ら部分）
+      rc.fillStyle = '#cc3333'
+      rc.fillRect(sx + 2, sy, 10, 4)
+      // 左の柱（はしご）
+      rc.fillStyle = '#dd4444'
+      rc.fillRect(sx + 2, sy + 4, 3, 24)
+      rc.fillRect(sx + 9, sy + 4, 3, 24)
+      // はしごの横棒
+      rc.fillStyle = '#ee6666'
+      rc.fillRect(sx + 5, sy + 8, 4, 2)
+      rc.fillRect(sx + 5, sy + 14, 4, 2)
+      rc.fillRect(sx + 5, sy + 20, 4, 2)
+      // すべる面（斜め、段々で表現）
+      rc.fillStyle = '#ffcc44'
+      rc.fillRect(sx + 12, sy + 2, 10, 3)
+      rc.fillRect(sx + 14, sy + 5, 10, 3)
+      rc.fillRect(sx + 16, sy + 8, 10, 3)
+      rc.fillRect(sx + 18, sy + 11, 10, 3)
+      rc.fillRect(sx + 20, sy + 14, 8, 3)
+      rc.fillRect(sx + 22, sy + 17, 6, 3)
+      rc.fillRect(sx + 24, sy + 20, 4, 3)
+      // 滑り面のハイライト
+      rc.fillStyle = '#ffdd66'
+      rc.fillRect(sx + 13, sy + 3, 8, 1)
+      rc.fillRect(sx + 15, sy + 6, 8, 1)
+      rc.fillRect(sx + 17, sy + 9, 8, 1)
+      // 手すり（滑り面の両サイド）
+      rc.fillStyle = '#cc3333'
+      rc.fillRect(sx + 12, sy + 1, 1, 22)
+      rc.fillRect(sx + 28, sy + 15, 1, 10)
+    }
+
+    // === ブランコ（右上草地 col11-12, row2-3 のみ）===
+    // col11=176px, col12=192px → 描画は 176〜207px の範囲
+    {
+      const bx = 11 * TILE, by = 2 * TILE
+      rc.fillStyle = '#888'
+      // フレーム
+      rc.fillRect(bx + 2, by + 2, 28, 3)
+      rc.fillRect(bx + 2, by + 5, 3, 22)
+      rc.fillRect(bx + 27, by + 5, 3, 22)
+      // 鎖+座面1
+      rc.fillStyle = '#aaa'
+      rc.fillRect(bx + 8, by + 5, 1, 16)
+      rc.fillRect(bx + 13, by + 5, 1, 16)
+      rc.fillStyle = '#dd6633'
+      rc.fillRect(bx + 7, by + 20, 8, 3)
+      // 鎖+座面2
+      rc.fillStyle = '#aaa'
+      rc.fillRect(bx + 18, by + 5, 1, 16)
+      rc.fillRect(bx + 23, by + 5, 1, 16)
+      rc.fillStyle = '#4488cc'
+      rc.fillRect(bx + 17, by + 20, 8, 3)
+    }
+
+    // === 砂場（中央上 col5-9, row2-3）===
+    // 木枠
+    rc.fillStyle = '#8a6a40'
+    rc.fillRect(5 * TILE + 2, 2 * TILE + 2, TILE * 4 - 4, 2)
+    rc.fillRect(5 * TILE + 2, 3 * TILE + 12, TILE * 4 - 4, 2)
+    rc.fillRect(5 * TILE + 2, 2 * TILE + 2, 2, TILE * 2 - 4)
+    rc.fillRect(9 * TILE - 4, 2 * TILE + 2, 2, TILE * 2 - 4)
+    // 砂
+    rc.fillStyle = '#e8d8a0'
+    rc.fillRect(5 * TILE + 4, 2 * TILE + 4, TILE * 4 - 8, TILE * 2 - 8)
+    // 砂山
+    rc.fillStyle = '#d8c890'
+    rc.fillRect(6 * TILE + 4, 2 * TILE + 8, 10, 8)
+    rc.fillRect(6 * TILE + 6, 2 * TILE + 6, 6, 12)
+    rc.fillStyle = '#c8b880'
+    rc.fillRect(6 * TILE + 7, 2 * TILE + 9, 4, 5)
+    // バケツ
+    rc.fillStyle = '#dd4444'
+    rc.fillRect(7 * TILE + 8, 3 * TILE + 2, 5, 5)
+    rc.fillStyle = '#ee5555'
+    rc.fillRect(7 * TILE + 8, 3 * TILE + 2, 5, 1)
+    // スコップ
+    rc.fillStyle = '#ffcc44'
+    rc.fillRect(8 * TILE, 3 * TILE + 4, 2, 4)
+    rc.fillStyle = '#aaa'
+    rc.fillRect(7 * TILE + 15, 3 * TILE + 8, 4, 2)
+
+    // === 花壇（下の草地 row9）===
+    rc.fillStyle = '#8a6a40'
+    rc.fillRect(3 * TILE, 9 * TILE + 2, TILE * 9, 10)
+    rc.fillStyle = '#5a3a1a'
+    rc.fillRect(3 * TILE + 2, 9 * TILE + 3, TILE * 9 - 4, 8)
+    const flowers = [
+      { x: 4, c: '#ff4466' }, { x: 14, c: '#ffcc00' }, { x: 24, c: '#ff88cc' },
+      { x: 34, c: '#8844ff' }, { x: 44, c: '#ff6600' }, { x: 54, c: '#44aaff' },
+      { x: 64, c: '#ff4466' }, { x: 74, c: '#ffcc00' }, { x: 84, c: '#ff88cc' },
+      { x: 94, c: '#44dd44' }, { x: 104, c: '#ee44aa' }, { x: 114, c: '#ffaa00' },
+      { x: 124, c: '#44aaff' }, { x: 134, c: '#ff4466' },
+    ]
+    for (const fl of flowers) {
+      rc.fillStyle = fl.c
+      rc.fillRect(3 * TILE + fl.x, 9 * TILE + 4, 3, 3)
+      rc.fillStyle = '#44aa44'
+      rc.fillRect(3 * TILE + fl.x + 1, 9 * TILE + 7, 1, 3)
+    }
+
+    // === 自販機（右中 col12, row7）===
+    rc.fillStyle = '#dd3333'
+    rc.fillRect(12 * TILE, 7 * TILE + 2, 12, 12)
+    rc.fillStyle = '#ee4444'
+    rc.fillRect(12 * TILE + 1, 7 * TILE + 3, 10, 5)
+    rc.fillStyle = '#fff'
+    rc.fillRect(12 * TILE + 2, 7 * TILE + 4, 2, 3)
+    rc.fillStyle = '#88ccff'
+    rc.fillRect(12 * TILE + 5, 7 * TILE + 4, 2, 3)
+    rc.fillStyle = '#ffcc00'
+    rc.fillRect(12 * TILE + 8, 7 * TILE + 4, 2, 3)
+    rc.fillStyle = '#333'
+    rc.fillRect(12 * TILE + 2, 7 * TILE + 10, 8, 2)
+
+    // === ゴミ箱（左中 col2, row7）===
+    rc.fillStyle = '#558855'
+    rc.fillRect(2 * TILE + 4, 7 * TILE + 2, 8, 10)
+    rc.fillStyle = '#447744'
+    rc.fillRect(2 * TILE + 3, 7 * TILE + 1, 10, 2)
+
+    // === 蝶々（アニメーション）===
+    const bfx = 7 * TILE + Math.sin(now * 0.001) * 16
+    const bfy = 7 * TILE + 8 + Math.cos(now * 0.0013) * 8
+    const wing = Math.sin(now * 0.01) > 0
+    rc.fillStyle = '#ffaadd'
+    if (wing) {
+      rc.fillRect(bfx - 2, bfy, 2, 3)
+      rc.fillRect(bfx + 1, bfy, 2, 3)
+    } else {
+      rc.fillRect(bfx - 1, bfy, 1, 2)
+      rc.fillRect(bfx + 1, bfy, 1, 2)
+    }
+    rc.fillStyle = '#333'
+    rc.fillRect(bfx, bfy, 1, 3)
+  }
+
   // ===== 時間帯オーバーレイ =====
   const ovl = getOverlay(s.timeOfDay)
   if (ovl.alpha > 0) {
@@ -1316,7 +1644,8 @@ export function drawRoom(s: DrawState): void {
     const roomBoxes = isStreet ? [
       { idx: 5, x: mapX,            y: mapY,          w: bw, h: bh, name: '手前' },
       { idx: 6, x: mapX + bw + gap, y: mapY,          w: bw, h: bh, name: '奥' },
-      { idx: 2, x: mapX,            y: mapY + bh + gap, w: mTotalW, h: bh, name: '庭へ戻る' },
+      { idx: 2, x: mapX,            y: mapY + bh + gap, w: bw, h: bh, name: '庭へ' },
+      { idx: 11, x: mapX + bw + gap, y: mapY + bh + gap, w: bw, h: bh, name: '公園' },
     ] : [
       { idx: 0, x: mapX,            y: mapY + bh + gap,        w: bw, h: bh, name: '和室' },
       { idx: 1, x: mapX + bw + gap, y: mapY + bh + gap,        w: bw, h: bh, name: '洋室' },
@@ -1326,6 +1655,8 @@ export function drawRoom(s: DrawState): void {
     ]
 
     const mapH = isStreet ? bh * 2 + gap : mTotalH
+    // 街マップの色を海の時は変える
+    const isBeach = currentRoom === 11
     rc.fillStyle = 'rgba(0,0,0,0.55)'
     rc.fillRect(mapX - 2, mapY - 2, mTotalW + 4, mapH + 4)
     rc.fillStyle = 'rgba(15,12,8,0.85)'
@@ -1334,7 +1665,7 @@ export function drawRoom(s: DrawState): void {
     for (let ri = 0; ri < roomBoxes.length; ri++) {
       const rb = roomBoxes[ri]
       const isCurrent = (rb.idx === currentRoom)
-      rc.fillStyle = isCurrent ? (isStreet ? '#3a5a8a' : '#886a3a') : '#2a2418'
+      rc.fillStyle = isCurrent ? (rb.idx === 11 ? '#3a7a3a' : isStreet ? '#3a5a8a' : '#886a3a') : '#2a2418'
       rc.fillRect(rb.x, rb.y, rb.w, rb.h)
       rc.strokeStyle = isCurrent ? '#ffdd44' : '#554'
       rc.lineWidth = isCurrent ? 1 : 0.5

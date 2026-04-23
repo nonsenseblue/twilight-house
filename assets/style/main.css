@@ -1,7 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&display=swap');
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { width: 100%; height: 100%; overflow: hidden; background: #111; }
-body { display: flex; justify-content: center; align-items: center; }
+body { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+
+/* Game area */
+.game-area {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.logout-btn {
+  position: fixed;
+  top: 8px; right: 8px;
+  padding: 4px 12px;
+  background: #222;
+  border: 1px solid #444;
+  color: #888;
+  font-size: 10px;
+  font-family: monospace;
+  cursor: pointer;
+  z-index: 60;
+}
+.logout-btn:hover { color: #ccc; border-color: #666; }
 
 /* Room canvas fills screen */
 canvas {

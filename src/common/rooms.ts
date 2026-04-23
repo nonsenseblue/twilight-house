@@ -20,7 +20,7 @@ export interface Door {
   spawnY: number
 }
 
-export type RoomType = 'tatami' | 'wood' | 'engawa' | 'bath' | 'street'
+export type RoomType = 'tatami' | 'wood' | 'engawa' | 'bath' | 'street' | 'beach' | 'mountain'
 
 export interface Room {
   name: string
@@ -39,7 +39,8 @@ export const ROOM_CHARS: RoomChar[] = [
   { name: 'わたるっち', body: '#f0e0d0', light: '#fff', eye: '#cc4466', accent: '#ffaacc' },
   { name: 'りこっち', body: '#fff', light: '#f8f8f8', eye: '#4488cc', accent: '#eee' },
   { name: 'みきぽんっち', body: '#8a6a40', light: '#c0a070', eye: '#222', accent: '#d0b080' },
-  { name: 'かわいっち', body: '#f0d8b0', light: '#fff0d0', eye: '#443322', accent: '#ee8844' }
+  { name: 'かわいっち', body: '#f0d8b0', light: '#fff0d0', eye: '#443322', accent: '#ee8844' },
+  { name: 'ごごっち', body: '#e8c040', light: '#f0d870', eye: '#222', accent: '#a07020' }
 ]
 
 // 話しかけ時のセリフ（charIdx別）
@@ -114,6 +115,14 @@ export const NPC_LINES: Record<number, string[]> = {
     'どれでも遊んでいいよ！',
     'くんくん...いい匂い！',
     'おもちゃは友達！'
+  ],
+  9: [ // ごごっち（きりん・公園）
+    'おおきに〜！',
+    'ええ天気やなぁ！',
+    'なんでやねん！',
+    'ほな、遊ぼか〜',
+    '公園はええなぁ〜',
+    'しらんけど。'
   ]
 }
 
@@ -206,6 +215,7 @@ export const NPC_HOME_ROOM: Record<number, number> = {
   6: 8, // りこっち → ラーメン屋
   7: 10, // みきぽんっち → 交番
   8: 9,  // かわいっち → おもちゃ屋
+  9: 11, // ごごっち → 海
 }
 
 // NPCの定位置（部屋内の論理座標）と向き
@@ -220,6 +230,7 @@ export const NPC_HOME_POS: Record<number, { x: number; y: number; dir: number }>
   6: { x: 7 * 16 + 8, y: 2 * 16 + 12, dir: 0 },  // ラーメン屋のカウンター内（少し前）
   7: { x: 4 * 16 + 8, y: 7 * 16 + 8, dir: 0 },  // 交番の床
   8: { x: 3 * 16 + 8, y: 6 * 16 + 8, dir: 3 },  // おもちゃ屋の棚横
+  9: { x: 10 * 16 + 8, y: 5 * 16 + 8, dir: 2 }, // 公園
 }
 
 export const selectChars: SelectCharPos[] = [
@@ -257,6 +268,8 @@ export const COLORS = {
 // 9=door(right) 10=door(left) 11=door(down) 12=door(up)
 // 20=wood_floor 21=sofa 22=record 23=engawa 24=garden 25=fridge 26=stove 27=sink 28=cat
 // 40=road 41=sidewalk
+// 50=sand 51=water 52=shallow
+// 53=mountain_grass 54=rock 55=mountain_path
 export const TILE = 16
 export const COLS = 15
 export const ROWS = 12
@@ -400,7 +413,7 @@ export const ROOMS: Room[] = [
     ],
     type: 'street'
   },
-  { // 6: 商店街・奥 — 左→商店街・手前、上→ラーメン屋、上→交番
+  { // 6: 商店街・奥 — 左→商店街・手前、上→ラーメン屋、上→交番、右→海
     name: '商店街・奥',
     tiles: [
       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -409,7 +422,7 @@ export const ROOMS: Room[] = [
       1,41,41,12,41,41,41,41,41,41,41,41,13,41, 1,
       1,41,41,41,41,41,41,41,41,41,41,41,41,41, 1,
       1,10,40,40,40,40,40,40,40,40,40,40,40,40, 1,
-      1,40,40,40,40,40,40,40,40,40,40,40,40,40, 1,
+      1,40,40,40,40,40,40,40,40,40,40,40,40, 9, 1,
       1,41,41,41,41,41,41,41,41,41,41,41,41,41, 1,
       1,41,41,41,41,41,41,41,41,41,41,41,41,41, 1,
       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -418,6 +431,7 @@ export const ROOMS: Room[] = [
     ],
     doors: [
       { tile: 10, toRoom: 5, spawnX: 12*16+8, spawnY: 5*16+8 },
+      { tile: 9,  toRoom: 11, spawnX: 2*16+8, spawnY: 6*16+8 },
       { tile: 12, toRoom: 8, spawnX: 7*16+8,  spawnY: 4*16+8 },
       { tile: 13, toRoom: 10, spawnX: 7*16+8, spawnY: 8*16+8 }
     ],
@@ -506,5 +520,26 @@ export const ROOMS: Room[] = [
       { tile: 11, toRoom: 6, spawnX: 12*16+8, spawnY: 4*16+8 }
     ],
     type: 'wood'
+  },
+  { // 11: 公園 — 左→商店街・奥
+    name: '公園',
+    tiles: [
+      53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,
+      53,53,53,53,55,55,55,55,55,55,55,53,53,53,53,
+      53,53,53,53,55,53,53,53,53,53,55,53,53,53,53,
+      53,53,53,53,55,53,53,53,53,53,55,53,53,53,53,
+      53,55,55,55,55,53,53,53,53,53,55,55,55,55,53,
+      53,55,53,53,53,53,53,53,53,53,53,53,53,55,53,
+      53,10,53,53,53,53,53,53,53,53,53,53,53,55,53,
+      53,55,53,53,53,53,53,53,53,53,53,53,53,55,53,
+      53,55,55,55,55,55,55,55,55,55,55,55,55,55,53,
+      53,53,53,53,53,53,53,53,53,53,53,53,53,53,53,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+    ],
+    doors: [
+      { tile: 10, toRoom: 6, spawnX: 12*16+8, spawnY: 6*16+8 }
+    ],
+    type: 'mountain'
   }
 ]
