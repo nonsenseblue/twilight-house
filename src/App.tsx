@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 // import { auth } from './firebase'
 import { ROOMS, TILE, COLS, ROWS, SCALE, NPC_LINES } from './common/rooms'
 import { drawRoom, drawPlayer, drawNpc, drawSelectMode, drawInteractHint, getMapHeaderRect, type DrawState, type Player } from './draw/room-draw'
-import { TvController } from './game/tv'
+import { TvController } from './game/tv/index'
 import { RoomCanvas, type RoomCanvasHandle } from './components/RoomCanvas'
 import { TvOverlay, type TvOverlayHandle } from './components/TvOverlay'
 import { initNpcs, findNearestNpc, type Npc } from './interaction/npc'
@@ -280,6 +280,26 @@ export function App() {
           return
         } else if (tv.ch === tv.GAME_CH && !tv.switching) {
           return
+        } else if (tv.ch === 2 && !tv.switching) {
+          // CH3: ブロック崩し
+          if (e.key === 'ArrowLeft') { tv.breakoutKey('left-down'); e.preventDefault() }
+          else if (e.key === 'ArrowRight') { tv.breakoutKey('right-down'); e.preventDefault() }
+          else if (e.key === 'ArrowUp') { tv.breakoutSpeedChange(1); e.preventDefault() }
+          else if (e.key === 'ArrowDown') { tv.breakoutSpeedChange(-1); e.preventDefault() }
+          else if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault()
+            tv.breakoutKey('space')
+          }
+        } else if (tv.ch === 4 && !tv.switching) {
+          // CH5: テトリス
+          if (e.key === 'ArrowLeft') { tv.tetrisKey('left-down'); e.preventDefault() }
+          else if (e.key === 'ArrowRight') { tv.tetrisKey('right-down'); e.preventDefault() }
+          else if (e.key === 'ArrowDown') { tv.tetrisKey('down-down'); e.preventDefault() }
+          else if (e.key === 'ArrowUp') { tv.tetrisKey('rotate'); e.preventDefault() }
+          else if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault()
+            tv.tetrisKey('space')
+          }
         } else if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
           tv.switchCh(1)
         } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
@@ -293,6 +313,17 @@ export function App() {
 
     const onKeyUp = (e: KeyboardEvent) => {
       keysRef.current[e.key] = false
+      const tv = tvRef.current
+      if (modeRef.current === 'tv' && tv) {
+        if (tv.ch === 2) {
+          if (e.key === 'ArrowLeft') tv.breakoutKey('left-up')
+          else if (e.key === 'ArrowRight') tv.breakoutKey('right-up')
+        } else if (tv.ch === 4) {
+          if (e.key === 'ArrowLeft') tv.tetrisKey('left-up')
+          else if (e.key === 'ArrowRight') tv.tetrisKey('right-up')
+          else if (e.key === 'ArrowDown') tv.tetrisKey('down-up')
+        }
+      }
     }
 
     document.addEventListener('keydown', onKeyDown)

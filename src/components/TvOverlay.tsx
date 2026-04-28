@@ -85,12 +85,12 @@ export const TvOverlay = forwardRef<TvOverlayHandle, TvOverlayProps>(
                 <div className="ctrl-panel">
                   <div className="ctrl-label">Channel</div>
                   <div className="ch-dial">
-                    <div className="ch-num">1</div>
-                    <div className="ch-num">2</div>
-                    <div className="ch-num">3</div>
-                    <div className="ch-num">4</div>
-                    <div className="ch-num">5</div>
-                    <div className="ch-num">6</div>
+                    <div className="ch-num" data-ch="0">1</div>
+                    <div className="ch-num" data-ch="1">2</div>
+                    <div className="ch-num" data-ch="2">3</div>
+                    <div className="ch-num" data-ch="3">4</div>
+                    <div className="ch-num" data-ch="4">5</div>
+                    <div className="ch-num" data-ch="5">6</div>
                     <div className="knob" ref={chKnobRef} />
                   </div>
                   <div className="ch-display" ref={chDisplayRef}>CH 1</div>
